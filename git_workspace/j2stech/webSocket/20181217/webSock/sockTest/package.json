@@ -1,0 +1,26 @@
+{
+  "name": "chatting",
+  "version": "1.0.0",
+  "description": "node-js-socket-io-chatting-site",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "socket.io": "^2.0.3"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-mean-blogger/node-js-socket-io-chatting-site.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/a-mean-blogger/node-js-socket-io-chatting-site/issues"
+  },
+  "homepage": "https://github.com/a-mean-blogger/node-js-socket-io-chatting-site#readme"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "kum",
+  "version": "1.0.0",
+  "main": "kum",
+  "scripts": {
+    "start": "node server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "kum"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "description": ""
+}

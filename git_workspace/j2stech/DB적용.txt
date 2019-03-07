@@ -1,0 +1,147 @@
+ * DB Table 적용 (table 접속 후 데이터 백업 후에 작업하자)
+1. OMP0, OMP1에 접속
+2. asp_console 명령어 접속
+####### 7 (OMP0)             #### 10 (OMP1)
+#  setc 7
+#  setc swMH_I0
+#                            setc 10
+#                            setc swMH_I1
+#  STOP-REPLICATION
+#  DROP-REPLICATION
+#  SET-TABLE /opt/lgn/disk/scm/FILTER.SCM.lhkyu.SCM
+   SET-DATA /opt/lgn/disk/data/ppp.DATA
+#                            STOP-REPLICATION
+#                            DROP-REPLICATION
+#                            SET-TABLE /opt/lgn/disk/scm/FILTER.SCM.lhkyu.SCM
+                             SET-DATA /opt/lgn/disk/data/ppp.DATA
+#  MAKE-REPLICATION
+#                            MAKE-REPLICATION
+#  START-REPLICATION
+#                            START-REPLICATION
+
+=========================================================================================
+
+### tcpdump
+tcpdump -i bond0:1 -s 5120 port 6933 -w soaptest.pcap
+
+
+### CP 적용
+sendByName.sh ompsgw libCallMethod.so call.mmx anSH pdnSH masterCCH
+telnet 40.11.5.41  # telnet 40.11.6.41
+scp root@40.11.6.7:/opt/lgn/asp/bin/*.lhkyu /opt/lgn/asp/bin/ ; \
+scp root@40.11.5.7:/opt/lgn/asp/bin/*.lhkyu /opt/lgn/asp/bin/ ; \
+ cd /opt/lgn/asp/bin/ ; ls -l *pdn* *an* *master* ; \
+mv -i pdnSH pdnSH.org ; mv -i anSH anSH.org ; mv -i masterCCH masterCCH.org ; \
+cp -i pdnSH.lhkyu pdnSH ; cp -i anSH.lhkyu anSH ; cp -i masterCCH.lhkyu masterCCH ;\
+ls -l *pdn* *an* *master*
+
+=========================================================================================
+### process memory check
+#!/bin/bash
+
+if [ $# = 0 ]; then
+  echo ; echo " ** Usage : $0 <processName...> " ; echo
+  exit;
+fi
+
+PATH=$PATH
+
+INFO_S_OLD=""
+INFO_S_NOW=""
+declare -i iShow
+declare -i iTitle
+declare -i PROCESS_RUNNING_CNT
+PROCESS_RUNNING_CNT=0
+iShow=1000
+iTitle=1000
+
+### check Process Name
+for INPUT_ARG in $@
+do
+  PROCESS_RUNNING_CNT=`ps -eo command|\grep \^${INPUT_ARG}\$|wc -l`
+  if [[ ${PROCESS_RUNNING_CNT} -gt 1 ]]; then
+    echo " *** WARNNING: PROCESS(${INPUT_ARG}) running count is ${PROCESS_RUNNING_CNT}"
+    INFO_S_OLD="${INFO_S_OLD}X "
+  else
+    INFO_S_OLD="${INFO_S_OLD}0 "
+  fi
+  PROCESS_NAME="${PROCESS_NAME}${INPUT_ARG} "
+done
+
+for (( ; ; ))
+do
+  declare -i i
+  i=1
+  PROCESS_TEMP="${PROCESS_NAME}"
+  INFO_S_NEW=""
+  STRING_SHOW=""
+
+  for SIZE_OLD in ${INFO_S_OLD}
+  do
+    PROCESS=${PROCESS_TEMP%% *}
+
+ #   if [ "${SIZE_OLD} " = "X " ]; then
+ #     INFO_S_NEW="${INFO_S_NEW}X "
+ #     for ((i=0;i<${#PROCESS};i++))
+ #     do
+ #       STRING_SHOW="${STRING_SHOW} "
+ #     done
+ #     STRING_SHOW="${STRING_SHOW} "
+ #     continue;
+ #   else
+      ### check now size
+      PROCESS_RUNNING_CNT=`ps -eo command|\grep \^${PROCESS}\$|wc -l`
+      if [[ ${PROCESS_RUNNING_CNT} != "1" ]]; then
+        SIZE_NOW="X"
+      else
+        SIZE_NOW="`ps -C ${PROCESS} -o size|\grep -v [^0-9]`"
+      fi
+      if [ "${SIZE_NOW} " != "${SIZE_OLD} " ]; then
+        iShow=1000 # show result
+#echo "change size [${PROCESS}] $SIZE_OLD > $SIZE_NOW # ps -C ${PROCESS} -o size|\grep -v [^0-9]"
+      fi
+
+      INFO_S_NEW="${INFO_S_NEW}${SIZE_NOW} "
+      for ((i=0;i<${#PROCESS}-${#SIZE_NOW};i++))
+      do
+        STRING_SHOW="${STRING_SHOW} "
+      done
+      STRING_SHOW="${STRING_SHOW}${SIZE_NOW} "
+  #  fi
+
+    # next set
+    PROCESS_TEMP=${PROCESS_TEMP#* }
+    i=$i+1
+  done
+
+  if [ "${INFO_S_NEW}" != "${INFO_S_OLD}" ]; then
+    iShow=1000
+  fi
+
+  if [ ${iShow} -gt 5 ]; then
+    if [ ${iTitle} -gt 5 ]; then
+      echo -n "       "
+      for ((i=0;i<${#PROCESS_NAME};i++))
+      do
+        echo -n "="
+      done
+      echo "=============="
+      echo "        ${PROCESS_NAME} time(H/M/S)"
+      echo -n "       "
+      for ((i=0;i<${#PROCESS_NAME};i++))
+      do
+        echo -n "="
+      done
+      echo "=============="
+      iTitle=0
+    fi
+    echo " MEMSZ  ${STRING_SHOW}  `date +"%T"`"
+    iTitle=${iTitle}+1
+    iShow=0
+  else
+    iShow=${iShow}+1
+  fi
+  INFO_S_OLD=${INFO_S_NEW}
+  sleep 3;
+done
+=========================================================================================

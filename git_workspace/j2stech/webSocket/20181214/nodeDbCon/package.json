@@ -1,0 +1,12 @@
+{
+  "name": "nodeDbCon",
+  "version": "1.0.0",
+  "main": "expressDbConn.js",
+  "scripts": {
+    "start": "node expressDbConn"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

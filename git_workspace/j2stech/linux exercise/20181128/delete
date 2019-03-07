@@ -1,0 +1,1 @@
+gcc -o db_delete $(mysql_config --cflags) db_delete.c $(mysql_config --libs)

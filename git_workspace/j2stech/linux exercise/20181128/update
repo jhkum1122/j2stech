@@ -1,0 +1,1 @@
+gcc -o db_update $(mysql_config --cflags) db_update.c $(mysql_config --libs)

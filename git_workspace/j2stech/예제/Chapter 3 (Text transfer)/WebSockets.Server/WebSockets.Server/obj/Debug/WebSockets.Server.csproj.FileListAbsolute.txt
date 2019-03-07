@@ -1,0 +1,2 @@
+C:\Users\Vangos\Downloads\6962OS_CodeBundle\6962OS_Code\Chapter 3\WebSockets\WebSockets.Server\WebSockets.Server\bin\Debug\WebSockets.Server.exe.config
+C:\Users\Vangos\Downloads\6962OS_CodeBundle\6962OS_Code\Chapter 3 (Text transfer)\WebSockets.Server\WebSockets.Server\bin\Debug\WebSockets.Server.exe.config

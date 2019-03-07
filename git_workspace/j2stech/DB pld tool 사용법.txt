@@ -1,0 +1,45 @@
+# ./pldtool ?h 로 기능확인하시고.
+# ./pldtool ?d 하시면 변경 사항 확인가능합니다.
+?
+-------------------------------------------------------------------
+?
+?
+PLD 데이터 확인 방법입니다.
+절차가 좀 복잡하네요... 좀더 단순화 할 수 있는지 고민이 필요해 보입니다.
+
+1. PLD를 만든다. - 개발서버(epc_sdc_I04 등)에서 생성
+/epc/oam/build/common/scripts/lgn-db.sh 실행
+>> /epc/agw_prj/target/AGW/db/DBPKG.tgz 생성됨
+
+
+2. target 시스템에서 DB를 백업한다.
+ACT-DB-BKUP 명령 이용
+>> ESM: /SharedData/System_Package/PKG/SR1.0.0_P4/SKT_PGW2/OMP/DB/DBPKG_SR1_0_0_P4_20111216161654.tgz와 같은 형식으로 생성됨. (위치 및 파일 이름은 시스템 마다 다름.)
+
+실행한 ESM 에서 아래와 같이 확인..
+find /SharedData/System_Package/PKG -name    DBPKG_LLSR2_1_7_20130903112152.tgz
+
+
+3. 위 백업 파일을 개발서버(epc_sdc_I04 등)로 가지고 온다.
+scp epcpkg@10.1.11.247:/SharedData/System_Package/PKG/LLSR2.1.7/SAEGW3/OMP/DB/DBPKG_LLSR2_1_7_20130903120624.tgz  ~/
+10.1.11.190 - SKT
+
+4. PLD tool을 이용하여 PLD merge
+/epc/oam/tools/pld -g -o 백업된파일tgz(2번) 새로운파일(1번).tgz
+>> DBPKG_1.tgz가 새로 생성된 파일임.
+
+/epc/oam/tools/pld -g -o ~/DBPKG_LLSR2_1_7_20130903112152.tgz /epc/agw_prj/target/AGW/db/DBPKG.tgz
+
+5. tar 명령을 이용하여 SCM, DAT 등 확인
+ls -lt /epc/agw_prj/target/AGW/db/
+
+ * 백업 데이터
+tar -xf DBPKG_1.tgz
+vi data/THRESHHOLD.DAT
+ * 로컬 데이터
+vi /epc/agw_prj/db/data/THRESHHOLD.DAT
+
+diff /epc/agw_prj/db/
+
+
+

@@ -1,0 +1,1 @@
+gcc -o db_con_test $(mysql_config --cflags) db_con_test.c $(mysql_config --libs)
